@@ -1,64 +1,50 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
-public class LevelGoal : MonoBehaviour
+public class LevelGoalTrigger : MonoBehaviour
 {
-    [SerializeField] private string nextLevelName = "";
-    [SerializeField] private ParticleSystem confettiEffect;
-    
-    private bool isActivated = false;
+    [SerializeField] private string levelName = "Уровень 1";
+    [SerializeField] private string nextLevelName = "Level2";
     
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.CompareTag("Player") && !isActivated)
+        if (collision.CompareTag("Player"))
         {
-            isActivated = true;
+            Debug.Log("Игрок достиг цели уровня!");
             
-            // Эффект
-            if (confettiEffect != null)
+            // Сохраняем прогресс
+            int currentLevel = SceneManager.GetActiveScene().buildIndex;
+            PlayerPrefs.SetInt("LastCompletedLevel", currentLevel);
+            PlayerPrefs.Save();
+            
+            // Показываем UI завершения уровня
+            if (UIManager.Instance != null)
             {
-                confettiEffect.Play();
+                UIManager.Instance.ShowLevelComplete(levelName);
             }
             
-            // Звук
-            // AudioSource.PlayClipAtPoint(winSound, transform.position);
-            
-            // Завершение уровня
-            CompleteLevel();
+            // Автопереход на следующий уровень через 3 секунды
+            Invoke("LoadNextLevel", 3f);
         }
-    }
-    
-    private void CompleteLevel()
-    {
-        Debug.Log("Level completed!");
-        
-        if (UIManager.Instance != null)
-        {
-            UIManager.Instance.ShowLevelComplete();
-        }
-        
-        if (GameManager.Instance != null)
-        {
-            GameManager.Instance.CompleteLevel();
-        }
-        
-        // Автопереход на следующий уровень через 3 секунды
-        Invoke("LoadNextLevel", 3f);
     }
     
     private void LoadNextLevel()
     {
         if (!string.IsNullOrEmpty(nextLevelName))
         {
-            UnityEngine.SceneManagement.SceneManager.LoadScene(nextLevelName);
+            SceneManager.LoadScene(nextLevelName);
         }
         else
         {
-            // Загрузка следующей сцены по индексу
-            int nextSceneIndex = UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex + 1;
-            if (nextSceneIndex < UnityEngine.SceneManagement.SceneManager.sceneCountInBuildSettings)
-            {
-                UnityEngine.SceneManagement.SceneManager.LoadScene(nextSceneIndex);
-            }
+            // Если следующего уровня нет, перезагружаем текущий
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
+    }
+    
+    // Визуализация в редакторе
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = new Color(0f, 1f, 0f, 0.3f);
+        Gizmos.DrawCube(transform.position, GetComponent<BoxCollider2D>().size);
     }
 }

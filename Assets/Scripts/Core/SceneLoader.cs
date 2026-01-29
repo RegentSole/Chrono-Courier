@@ -1,86 +1,33 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using System.Collections;
 
-public class SceneLoader : MonoBehaviour
+public class SceneManagerHelper : MonoBehaviour
 {
-    public static SceneLoader Instance { get; private set; }
-    
-    [SerializeField] private CanvasGroup loadingScreen;
-    [SerializeField] private float fadeTime = 0.5f;
-    
-    private void Awake()
+    public void LoadSceneByName(string sceneName)
     {
-        if (Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
+        Time.timeScale = 1f;
+        SceneManager.LoadScene(sceneName);
     }
     
-    public void LoadScene(string sceneName)
+    public void LoadSceneByIndex(int sceneIndex)
     {
-        StartCoroutine(LoadSceneAsync(sceneName));
+        Time.timeScale = 1f;
+        SceneManager.LoadScene(sceneIndex);
     }
     
-    public void LoadScene(int sceneIndex)
+    public void RestartCurrentScene()
     {
-        StartCoroutine(LoadSceneAsync(sceneIndex));
+        Time.timeScale = 1f;
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
     
-    private IEnumerator LoadSceneAsync(string sceneName)
+    public void QuitGame()
     {
-        // Показываем экран загрузки
-        if (loadingScreen != null)
-        {
-            loadingScreen.gameObject.SetActive(true);
-            yield return StartCoroutine(FadeCanvas(loadingScreen, 0f, 1f, fadeTime));
-        }
+        Debug.Log("Игра завершена");
+        Application.Quit();
         
-        // Загружаем сцену асинхронно
-        AsyncOperation operation = SceneManager.LoadSceneAsync(sceneName);
-        operation.allowSceneActivation = false;
-        
-        while (!operation.isDone)
-        {
-            // Ждем загрузки
-            if (operation.progress >= 0.9f)
-            {
-                operation.allowSceneActivation = true;
-            }
-            
-            yield return null;
-        }
-        
-        // Скрываем экран загрузки
-        if (loadingScreen != null)
-        {
-            yield return StartCoroutine(FadeCanvas(loadingScreen, 1f, 0f, fadeTime));
-            loadingScreen.gameObject.SetActive(false);
-        }
-    }
-    
-    private IEnumerator LoadSceneAsync(int sceneIndex)
-    {
-        yield return LoadSceneAsync(SceneManager.GetSceneByBuildIndex(sceneIndex).name);
-    }
-    
-    private IEnumerator FadeCanvas(CanvasGroup canvas, float startAlpha, float endAlpha, float duration)
-    {
-        float time = 0f;
-        
-        while (time < duration)
-        {
-            time += Time.deltaTime;
-            float t = time / duration;
-            canvas.alpha = Mathf.Lerp(startAlpha, endAlpha, t);
-            yield return null;
-        }
-        
-        canvas.alpha = endAlpha;
+        #if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+        #endif
     }
 }

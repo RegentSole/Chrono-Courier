@@ -1,35 +1,53 @@
 using UnityEngine;
-using UnityEngine.UI;
 using TMPro;
+using UnityEngine.SceneManagement;
+using System.Collections;
+
+// Используем псевдоним для избежания конфликтов
+using UnityButton = UnityEngine.UI.Button;
+using UnityImage = UnityEngine.UI.Image;
 
 public class UIManager : MonoBehaviour
 {
     public static UIManager Instance { get; private set; }
-    
+
     [Header("Recording UI")]
     [SerializeField] private GameObject recordingPanel;
-    [SerializeField] private Image recordTimerFill;
-    [SerializeField] private TextMeshProUGUI recordTimerText;
+    [SerializeField] private UnityImage recordTimerFill;
+    [SerializeField] private TMP_Text recordTimerText;
     [SerializeField] private Color readyColor = Color.green;
     [SerializeField] private Color recordingColor = Color.red;
     [SerializeField] private Color cooldownColor = Color.yellow;
-    
-    [Header("Tutorial UI")]
-    [SerializeField] private GameObject tutorialPanel;
-    [SerializeField] private TextMeshProUGUI tutorialText;
-    [SerializeField] private float tutorialDisplayTime = 5f;
-    
-    [Header("Game UI")]
-    [SerializeField] private GameObject gameOverPanel;
+
+    [Header("Pause Menu")]
+    [SerializeField] private GameObject pauseMenu;
+    [SerializeField] private UnityButton resumeButton;
+    [SerializeField] private UnityButton restartButton;
+    [SerializeField] private UnityButton menuButton;
+
+    [Header("Level Complete")]
     [SerializeField] private GameObject levelCompletePanel;
-    [SerializeField] private TextMeshProUGUI levelText;
-    
+    [SerializeField] private TMP_Text levelCompleteText;
+    [SerializeField] private UnityButton nextLevelButton;
+    [SerializeField] private UnityButton levelCompleteRestartButton;
+    [SerializeField] private UnityButton levelCompleteMenuButton;
+
+    [Header("Game Over")]
+    [SerializeField] private GameObject gameOverPanel;
+    [SerializeField] private TMP_Text gameOverText;
+    [SerializeField] private UnityButton gameOverRestartButton;
+    [SerializeField] private UnityButton gameOverMenuButton;
+
     private bool isRecording = false;
-    private float recordCooldown = 2f;
-    private float currentCooldown = 0f;
-    
+    private float maxRecordDuration = 5f;
+    private float currentRecordTime = 0f;
+    private bool isPaused = false;
+    private bool isGameOver = false;
+    private bool isLevelComplete = false;
+
     private void Awake()
     {
+        // Singleton
         if (Instance == null)
         {
             Instance = this;
@@ -39,182 +57,334 @@ public class UIManager : MonoBehaviour
             Destroy(gameObject);
         }
     }
-    
+
     private void Start()
     {
-        // Подписываемся на события
-        if (EventManager.Instance != null)
-        {
-            EventManager.Instance.OnRecordingStarted += OnRecordingStarted;
-            EventManager.Instance.OnRecordingStopped += OnRecordingStopped;
-            EventManager.Instance.OnRecordTimerUpdated += UpdateRecordTimer;
-            EventManager.Instance.OnPlayerDetected += ShowAlert;
-        }
-        
-        // Скрываем UI элементы
-        if (recordingPanel != null) recordingPanel.SetActive(false);
-        if (gameOverPanel != null) gameOverPanel.SetActive(false);
-        if (levelCompletePanel != null) levelCompletePanel.SetActive(false);
-        
-        // Показываем туториал
-        ShowTutorial("Двигайтесь: A/D или ←/→\nПрыжок: Пробел\nЗапись: Удерживайте R");
+        InitializeUI();
     }
-    
-    private void Update()
+
+    private void InitializeUI()
     {
-        // Обновление кулдауна
-        if (currentCooldown > 0)
+        // Инициализация панели записи
+        if (recordingPanel != null)
         {
-            currentCooldown -= Time.deltaTime;
-            UpdateCooldownUI();
-        }
-    }
-    
-    private void OnRecordingStarted()
-    {
-        isRecording = true;
-        if (recordingPanel != null) recordingPanel.SetActive(true);
-        
-        if (recordTimerFill != null)
-        {
-            recordTimerFill.color = recordingColor;
-        }
-    }
-    
-    private void OnRecordingStopped()
-    {
-        isRecording = false;
-        currentCooldown = recordCooldown;
-        
-        if (recordTimerFill != null)
-        {
-            recordTimerFill.color = cooldownColor;
-        }
-    }
-    
-    private void UpdateRecordTimer(float timeRemaining)
-    {
-        if (recordTimerFill != null)
-        {
-            float fillAmount = timeRemaining / 5f; // 5 секунд максимальная запись
-            recordTimerFill.fillAmount = fillAmount;
-        }
-        
-        if (recordTimerText != null)
-        {
-            recordTimerText.text = Mathf.CeilToInt(timeRemaining).ToString();
-        }
-    }
-    
-    private void UpdateCooldownUI()
-    {
-        if (currentCooldown <= 0)
-        {
+            recordingPanel.SetActive(true);
             if (recordTimerFill != null)
             {
                 recordTimerFill.color = readyColor;
                 recordTimerFill.fillAmount = 1f;
             }
-            
             if (recordTimerText != null)
             {
-                recordTimerText.text = "Готово";
-            }
-            
-            if (recordingPanel != null && !isRecording)
-            {
-                recordingPanel.SetActive(false);
+                recordTimerText.text = "✓";
             }
         }
         else
+        {
+            Debug.LogError("Recording Panel не назначен в UIManager!");
+        }
+
+        // Инициализация меню паузы (скрываем)
+        if (pauseMenu != null)
+        {
+            pauseMenu.SetActive(false);
+            
+            // Назначаем обработчики кнопок
+            if (resumeButton != null) resumeButton.onClick.AddListener(ResumeGame);
+            if (restartButton != null) restartButton.onClick.AddListener(RestartLevel);
+            if (menuButton != null) menuButton.onClick.AddListener(LoadMainMenu);
+        }
+
+        // Инициализация панели завершения уровня (скрываем)
+        if (levelCompletePanel != null)
+        {
+            levelCompletePanel.SetActive(false);
+            
+            if (nextLevelButton != null) nextLevelButton.onClick.AddListener(LoadNextLevel);
+            if (levelCompleteRestartButton != null) levelCompleteRestartButton.onClick.AddListener(RestartLevel);
+            if (levelCompleteMenuButton != null) levelCompleteMenuButton.onClick.AddListener(LoadMainMenu);
+        }
+
+        // Инициализация панели поражения (скрываем)
+        if (gameOverPanel != null)
+        {
+            gameOverPanel.SetActive(false);
+            
+            if (gameOverRestartButton != null) gameOverRestartButton.onClick.AddListener(RestartLevel);
+            if (gameOverMenuButton != null) gameOverMenuButton.onClick.AddListener(LoadMainMenu);
+        }
+    }
+
+    private void Update()
+    {
+        // Обновление таймера записи
+        if (isRecording)
+        {
+            UpdateRecordingTimer();
+        }
+
+        // Обработка паузы по нажатию ESC (только если не завершен уровень и не поражение)
+        if (Input.GetKeyDown(KeyCode.Escape) && !isLevelComplete && !isGameOver)
+        {
+            TogglePause();
+        }
+    }
+
+    #region Пауза
+    // Метод для переключения паузы
+    public void TogglePause()
+    {
+        isPaused = !isPaused;
+        
+        // Останавливаем/возобновляем время
+        Time.timeScale = isPaused ? 0f : 1f;
+        
+        // Показываем/скрываем меню паузы
+        if (pauseMenu != null)
+        {
+            pauseMenu.SetActive(isPaused);
+        }
+        
+        // Показываем/скрываем курсор
+        Cursor.visible = isPaused;
+        Cursor.lockState = isPaused ? CursorLockMode.None : CursorLockMode.Locked;
+        
+        Debug.Log(isPaused ? "Игра приостановлена" : "Игра возобновлена");
+    }
+
+    // Методы для кнопок меню паузы
+    public void ResumeGame()
+    {
+        TogglePause();
+    }
+    #endregion
+
+    #region Запись
+    // Существующие методы для управления записью
+    public void StartRecording()
+    {
+        if (isRecording || isPaused || isLevelComplete || isGameOver) return;
+        
+        isRecording = true;
+        currentRecordTime = 0f;
+        
+        if (recordTimerFill != null)
+        {
+            recordTimerFill.color = recordingColor;
+        }
+        
+        if (recordTimerText != null)
+        {
+            recordTimerText.text = maxRecordDuration.ToString();
+        }
+        
+        Debug.Log("Запись начата");
+    }
+
+    public void StopRecording()
+    {
+        if (!isRecording) return;
+        
+        isRecording = false;
+        
+        if (recordTimerFill != null)
+        {
+            recordTimerFill.color = cooldownColor;
+            recordTimerFill.fillAmount = 1f;
+        }
+        
+        if (recordTimerText != null)
+        {
+            recordTimerText.text = "✓";
+        }
+        
+        // Через 2 секунды возвращаем в готовность
+        Invoke("ResetToReady", 2f);
+        
+        Debug.Log("Запись остановлена");
+    }
+    
+    public void UpdateRecordTimer(float timeRemaining)
+    {
+        if (!isRecording) return;
+        
+        if (recordTimerFill != null)
+        {
+            float fillAmount = Mathf.Clamp01(timeRemaining / maxRecordDuration);
+            recordTimerFill.fillAmount = fillAmount;
+        }
+
+        if (recordTimerText != null && timeRemaining > 0)
+        {
+            recordTimerText.text = Mathf.CeilToInt(timeRemaining).ToString();
+            
+            // Мигание при малом времени
+            if (timeRemaining < 2f)
+            {
+                recordTimerText.color = Color.Lerp(Color.white, Color.red, Mathf.PingPong(Time.time * 5f, 1f));
+            }
+            else
+            {
+                recordTimerText.color = Color.white;
+            }
+        }
+    }
+
+    private void UpdateRecordingTimer()
+    {
+        if (!isRecording) return;
+        
+        currentRecordTime += Time.deltaTime;
+        float timeRemaining = Mathf.Max(0f, maxRecordDuration - currentRecordTime);
+        
+        UpdateRecordTimer(timeRemaining);
+        
+        // Автоматическая остановка при достижении лимита
+        if (currentRecordTime >= maxRecordDuration)
+        {
+            StopRecording();
+        }
+    }
+
+    private void ResetToReady()
+    {
+        if (!isRecording)
         {
             if (recordTimerFill != null)
             {
-                recordTimerFill.fillAmount = currentCooldown / recordCooldown;
+                recordTimerFill.color = readyColor;
             }
             
             if (recordTimerText != null)
             {
-                recordTimerText.text = Mathf.CeilToInt(currentCooldown).ToString();
+                recordTimerText.text = "✓";
+                recordTimerText.color = Color.white;
             }
         }
     }
-    
-    public void ShowTutorial(string message)
+    #endregion
+
+    #region Завершение уровня
+    // Метод для отображения панели завершения уровня
+    public void ShowLevelComplete(string levelName = "")
     {
-        if (tutorialPanel == null || tutorialText == null) return;
+        if (isLevelComplete) return;
         
-        tutorialText.text = message;
-        tutorialPanel.SetActive(true);
+        isLevelComplete = true;
+        Time.timeScale = 0f; // Останавливаем игру
         
-        // Автоматическое скрытие через время
-        Invoke("HideTutorial", tutorialDisplayTime);
-    }
-    
-    public void HideTutorial()
-    {
-        if (tutorialPanel != null)
-        {
-            tutorialPanel.SetActive(false);
-        }
-    }
-    
-    private void ShowAlert()
-    {
-        // Можно добавить мигание UI или звуковое оповещение
-        Debug.Log("ALERT: Player detected!");
-    }
-    
-    public void ShowGameOver()
-    {
-        if (gameOverPanel != null)
-        {
-            gameOverPanel.SetActive(true);
-        }
-    }
-    
-    public void ShowLevelComplete()
-    {
         if (levelCompletePanel != null)
         {
             levelCompletePanel.SetActive(true);
+            
+            if (levelCompleteText != null)
+            {
+                string message = "Уровень пройден!";
+                if (!string.IsNullOrEmpty(levelName))
+                {
+                    message += $"\n{levelName}";
+                }
+                levelCompleteText.text = message;
+            }
         }
+        
+        // Скрываем другие UI элементы
+        if (recordingPanel != null) recordingPanel.SetActive(false);
+        if (pauseMenu != null && pauseMenu.activeSelf) pauseMenu.SetActive(false);
+        
+        // Показываем курсор
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.None;
+        
+        Debug.Log("Панель завершения уровня показана");
     }
-    
+    #endregion
+
+    #region Поражение
+    // Метод для отображения панели поражения
+    public void ShowGameOver(string reason = "Вас обнаружили!")
+    {
+        if (isGameOver) return;
+        
+        isGameOver = true;
+        Time.timeScale = 0f; // Останавливаем игру
+        
+        if (gameOverPanel != null)
+        {
+            gameOverPanel.SetActive(true);
+            
+            if (gameOverText != null)
+            {
+                gameOverText.text = reason;
+            }
+        }
+        
+        // Скрываем другие UI элементы
+        if (recordingPanel != null) recordingPanel.SetActive(false);
+        if (pauseMenu != null && pauseMenu.activeSelf) pauseMenu.SetActive(false);
+        
+        // Показываем курсор
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.None;
+        
+        Debug.Log("Панель поражения показана: " + reason);
+    }
+    #endregion
+
+    #region Управление сценами
     public void RestartLevel()
     {
-        UnityEngine.SceneManagement.SceneManager.LoadScene(
-            UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex
-        );
+        Time.timeScale = 1f; // Восстанавливаем время
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
-    
+
+    public void LoadMainMenu()
+    {
+        Time.timeScale = 1f;
+        SceneManager.LoadScene("MainMenu");
+    }
+
     public void LoadNextLevel()
     {
-        int nextSceneIndex = UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex + 1;
-        if (nextSceneIndex < UnityEngine.SceneManagement.SceneManager.sceneCountInBuildSettings)
+        Time.timeScale = 1f;
+        int nextSceneIndex = SceneManager.GetActiveScene().buildIndex + 1;
+        if (nextSceneIndex < SceneManager.sceneCountInBuildSettings)
         {
-            UnityEngine.SceneManagement.SceneManager.LoadScene(nextSceneIndex);
+            SceneManager.LoadScene(nextSceneIndex);
         }
         else
         {
-            UnityEngine.SceneManagement.SceneManager.LoadScene(0); // Возврат в меню
+            // Если следующего уровня нет, возвращаем в меню
+            LoadMainMenu();
         }
     }
-    
-    public void QuitToMenu()
+    #endregion
+
+    #region Вспомогательные методы
+    // Метод для сброса всех состояний UI
+    public void ResetUI()
     {
-        UnityEngine.SceneManagement.SceneManager.LoadScene(0);
-    }
-    
-    private void OnDestroy()
-    {
-        // Отписываемся от событий
-        if (EventManager.Instance != null)
+        isPaused = false;
+        isGameOver = false;
+        isLevelComplete = false;
+        
+        Time.timeScale = 1f;
+        
+        // Скрываем все панели кроме записи
+        if (pauseMenu != null) pauseMenu.SetActive(false);
+        if (levelCompletePanel != null) levelCompletePanel.SetActive(false);
+        if (gameOverPanel != null) gameOverPanel.SetActive(false);
+        
+        // Восстанавливаем панель записи
+        if (recordingPanel != null)
         {
-            EventManager.Instance.OnRecordingStarted -= OnRecordingStarted;
-            EventManager.Instance.OnRecordingStopped -= OnRecordingStopped;
-            EventManager.Instance.OnRecordTimerUpdated -= UpdateRecordTimer;
-            EventManager.Instance.OnPlayerDetected -= ShowAlert;
+            recordingPanel.SetActive(true);
+            ResetToReady();
         }
+        
+        // Скрываем курсор
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
     }
+    #endregion
 }

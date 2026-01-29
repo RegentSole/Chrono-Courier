@@ -3,9 +3,8 @@ using UnityEngine;
 public class GhostController : MonoBehaviour
 {
     [Header("Ghost Settings")]
-    [SerializeField] private Color ghostColor = new Color(1f, 1f, 1f, 0.6f);
-    [SerializeField] private int maxGhosts = 1;
     [SerializeField] private float replaySpeed = 1f;
+    [SerializeField] private float destroyAfterSeconds = 5f;
     
     private RecordFrame[] recording;
     private int currentFrame = 0;
@@ -14,19 +13,15 @@ public class GhostController : MonoBehaviour
     
     private Rigidbody2D rb;
     private SpriteRenderer spriteRenderer;
-    private Animator animator;
     
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
-        animator = GetComponent<Animator>();
         
-        // Настраиваем визуал призрака
         if (spriteRenderer != null)
         {
-            spriteRenderer.color = ghostColor;
-            spriteRenderer.sortingOrder = -1; // Призрак позади игрока
+            spriteRenderer.color = new Color(1f, 1f, 1f, 0.6f);
         }
     }
     
@@ -37,17 +32,21 @@ public class GhostController : MonoBehaviour
         replayStartTime = Time.time;
         isReplaying = true;
         
-        // Активируем объект
         gameObject.SetActive(true);
         
-        Debug.Log($"Ghost replay started with {recording.Length} frames");
+        Debug.Log($"Призрак: Начинаю воспроизведение с {recording.Length} кадрами");
+        
+        // Уничтожаем через указанное время
+        if (destroyAfterSeconds > 0)
+        {
+            Destroy(gameObject, destroyAfterSeconds);
+        }
     }
     
     private void FixedUpdate()
     {
         if (!isReplaying || recording == null || currentFrame >= recording.Length)
         {
-            FinishReplay();
             return;
         }
         
@@ -81,36 +80,16 @@ public class GhostController : MonoBehaviour
         Vector2 targetPosition = Vector2.Lerp(transform.position, frame.position, t);
         rb.MovePosition(targetPosition);
         
-        // Анимации
-        if (animator != null)
-        {
-            animator.SetBool("IsRunning", Mathf.Abs(frame.velocity.x) > 0.1f);
-            animator.SetBool("IsGrounded", frame.isGrounded);
-            animator.SetBool("IsJumping", frame.isJumping);
-        }
-        
         // Поворот спрайта
-        if (spriteRenderer != null)
+        if (spriteRenderer != null && frame.velocity.x != 0)
         {
-            if (frame.velocity.x > 0.1f)
-                spriteRenderer.flipX = false;
-            else if (frame.velocity.x < -0.1f)
-                spriteRenderer.flipX = true;
+            spriteRenderer.flipX = frame.velocity.x < 0;
         }
     }
     
     private void FinishReplay()
     {
         isReplaying = false;
-        gameObject.SetActive(false);
-        Debug.Log("Ghost replay finished");
-    }
-    
-    public void ResetGhost()
-    {
-        recording = null;
-        currentFrame = 0;
-        isReplaying = false;
-        gameObject.SetActive(false);
+        Debug.Log("Призрак: Воспроизведение завершено");
     }
 }

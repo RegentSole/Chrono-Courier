@@ -5,8 +5,10 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
     
-    [Header("Settings")]
-    [SerializeField] private GameSettings gameSettings;
+    [Header("Game Settings")]
+    public int totalLevels = 4;
+    public float restartDelay = 2f;
+    public float uiFadeTime = 0.3f;
     
     public enum GameState
     {
@@ -22,13 +24,10 @@ public class GameManager : MonoBehaviour
     
     private void Awake()
     {
-        // Singleton pattern
         if (Instance == null)
         {
             Instance = this;
             DontDestroyOnLoad(gameObject);
-            
-            // Инициализация систем
             InitializeSystems();
         }
         else
@@ -39,27 +38,7 @@ public class GameManager : MonoBehaviour
     
     private void InitializeSystems()
     {
-        // Загружаем ScriptableObjects если они не назначены
-        if (gameSettings == null)
-        {
-            // Правильный способ загрузки ScriptableObject
-            string path = "Data/GameSettings";
-            gameSettings = Resources.Load<GameSettings>(path);
-            
-            if (gameSettings == null)
-            {
-                Debug.LogError($"GameSettings not found at path: {path}. Creating default...");
-                // Создаем временные настройки, если файл не найден
-                gameSettings = ScriptableObject.CreateInstance<GameSettings>();
-                gameSettings.totalLevels = 4;
-                gameSettings.restartDelay = 2f;
-                gameSettings.uiFadeTime = 0.3f;
-            }
-        }
-        
-        // Подписываемся на события загрузки сцен
         SceneManager.sceneLoaded += OnSceneLoaded;
-        
         Debug.Log("GameManager initialized");
     }
     
@@ -67,7 +46,6 @@ public class GameManager : MonoBehaviour
     {
         Debug.Log($"Scene loaded: {scene.name}");
         
-        // В зависимости от сцены устанавливаем состояние
         if (scene.name == "MainMenu")
         {
             SetState(GameState.MainMenu);
@@ -84,10 +62,10 @@ public class GameManager : MonoBehaviour
         GameState previousState = currentState;
         currentState = newState;
         
-        // Безопасный вызов события
+        // Вызываем через метод EventManager, а не событие напрямую
         if (EventManager.Instance != null)
         {
-            EventManager.Instance.OnGameStateChanged?.Invoke(previousState, newState);
+            EventManager.Instance.ChangeGameState(previousState, newState);
         }
         
         Debug.Log($"Game state changed: {previousState} -> {newState}");
@@ -95,10 +73,10 @@ public class GameManager : MonoBehaviour
     
     private void StartLevel()
     {
-        // Инициализация уровня
+        // Вызываем через метод EventManager
         if (EventManager.Instance != null)
         {
-            EventManager.Instance.OnLevelStarted?.Invoke();
+            EventManager.Instance.StartLevel();
         }
         
         Debug.Log("Level started");
@@ -107,17 +85,20 @@ public class GameManager : MonoBehaviour
     public void CompleteLevel()
     {
         SetState(GameState.LevelComplete);
-        
-        // Сохраняем прогресс
         PlayerPrefs.SetInt("LastCompletedLevel", SceneManager.GetActiveScene().buildIndex);
         PlayerPrefs.Save();
+        
+        // Вызываем через метод EventManager
+        if (EventManager.Instance != null)
+        {
+            EventManager.Instance.CompleteLevel();
+        }
         
         Debug.Log("Level completed!");
     }
     
     private void OnApplicationQuit()
     {
-        // Отписываемся от событий
         SceneManager.sceneLoaded -= OnSceneLoaded;
     }
     

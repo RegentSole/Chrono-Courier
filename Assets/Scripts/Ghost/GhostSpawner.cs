@@ -3,50 +3,49 @@ using UnityEngine;
 public class GhostSpawner : MonoBehaviour
 {
     [SerializeField] private GameObject ghostPrefab;
-    [SerializeField] private Transform ghostParent;
     
-    private GhostController currentGhost;
-    
-    private void OnEnable()
+    // УБИРАЕМ подписку на события, так как теперь прямой вызов
+    private void Start()
     {
-        // Подписываемся на событие завершения записи
-        var playerRecording = FindObjectOfType<PlayerRecording>();
-        if (playerRecording != null)
+        // Больше не подписываемся, просто проверяем наличие префаба
+        if (ghostPrefab == null)
         {
-            playerRecording.OnRecordingComplete += SpawnGhost;
+            Debug.LogError("Ghost prefab не назначен в GhostSpawner!");
+        }
+        else
+        {
+            Debug.Log("GhostSpawner готов к работе");
         }
     }
     
-    private void OnDisable()
+    // Метод ДОЛЖЕН быть public
+    public void SpawnGhost(RecordFrame[] recording, Vector2 position)
     {
-        var playerRecording = FindObjectOfType<PlayerRecording>();
-        if (playerRecording != null)
+        if (recording == null || recording.Length == 0)
         {
-            playerRecording.OnRecordingComplete -= SpawnGhost;
-        }
-    }
-    
-    private void SpawnGhost(RecordFrame[] recording)
-    {
-        if (recording == null || recording.Length == 0) return;
-        
-        // Удаляем старый призрак
-        if (currentGhost != null)
-        {
-            currentGhost.ResetGhost();
-            Destroy(currentGhost.gameObject);
+            Debug.LogWarning("Пустая запись для призрака");
+            return;
         }
         
-        // Создаем нового призрака
-        GameObject ghostObj = Instantiate(ghostPrefab, ghostParent);
-        ghostObj.transform.position = recording[0].position;
-        
-        currentGhost = ghostObj.GetComponent<GhostController>();
-        if (currentGhost != null)
+        if (ghostPrefab == null)
         {
-            currentGhost.StartReplay(recording);
+            Debug.LogError("Ghost prefab не назначен!");
+            return;
         }
         
-        Debug.Log("Ghost spawned!");
+        // Создаем призрака
+        GameObject ghost = Instantiate(ghostPrefab, position, Quaternion.identity);
+        GhostController ghostController = ghost.GetComponent<GhostController>();
+        
+        if (ghostController != null)
+        {
+            ghostController.StartReplay(recording);
+        }
+        else
+        {
+            Debug.LogError("Ghost prefab не имеет GhostController компонента!");
+        }
+        
+        Debug.Log($"Призрак создан с {recording.Length} кадрами");
     }
 }

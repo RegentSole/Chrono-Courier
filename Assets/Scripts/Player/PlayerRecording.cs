@@ -33,34 +33,26 @@ public class PlayerRecording : MonoBehaviour
     private float recordStartTime;
     private bool isRecording = false;
     
-    public event System.Action<RecordFrame[]> OnRecordingComplete;
+    private SpriteRenderer spriteRenderer;
     
     private void Start()
     {
-        // Подписываемся на события
-        if (EventManager.Instance != null)
-        {
-            EventManager.Instance.OnRecordingStarted += StartRecording;
-            EventManager.Instance.OnRecordingStopped += StopRecording;
-        }
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        Debug.Log("PlayerRecording инициализирован");
     }
     
-    public void StartRecording()
+    private void Update()
     {
-        if (isRecording) return;
-        
-        recording.Clear();
-        recordStartTime = Time.time;
-        isRecording = true;
-        
-        // Меняем цвет игрока
-        var spriteRenderer = GetComponent<SpriteRenderer>();
-        if (spriteRenderer != null)
+        // Простое управление - нажал R для старта, отпустил для стопа
+        if (Input.GetKeyDown(KeyCode.R))
         {
-            spriteRenderer.color = recordingColor;
+            StartRecording();
         }
         
-        Debug.Log("Recording started");
+        if (Input.GetKeyUp(KeyCode.R))
+        {
+            StopRecording();
+        }
     }
     
     private void FixedUpdate()
@@ -69,18 +61,38 @@ public class PlayerRecording : MonoBehaviour
         
         RecordCurrentFrame();
         
-        // Обновляем UI таймера
-        float timeRemaining = maxRecordDuration - (Time.time - recordStartTime);
-        if (EventManager.Instance != null)
-        {
-            EventManager.Instance.UpdateRecordTimer(timeRemaining);
-        }
-        
-        // Ограничиваем длительность записи
+        // Автоматическая остановка при достижении лимита
         if (Time.time - recordStartTime >= maxRecordDuration)
         {
             StopRecording();
         }
+    }
+    
+    private void StartRecording()
+    {
+        if (isRecording) return;
+        
+        recording.Clear();
+        recordStartTime = Time.time;
+        isRecording = true;
+        
+        // Меняем цвет игрока
+        if (spriteRenderer != null)
+        {
+            spriteRenderer.color = recordingColor;
+        }
+        
+        // Прямой вызов UIManager
+        if (UIManager.Instance != null)
+        {
+            UIManager.Instance.StartRecording();
+        }
+        else
+        {
+            Debug.LogWarning("UIManager.Instance is null!");
+        }
+        
+        Debug.Log("Игрок: Запись начата");
     }
     
     private void RecordCurrentFrame()
@@ -94,60 +106,63 @@ public class PlayerRecording : MonoBehaviour
             playerController.Velocity,
             playerController.IsGrounded,
             playerController.IsJumping,
-            playerController.IsInteracting
+            false // IsInteracting пока не используем
         );
         
         recording.Add(frame);
+        
+        // Обновляем таймер в UI
+        float timeRemaining = maxRecordDuration - (Time.time - recordStartTime);
+        if (UIManager.Instance != null)
+        {
+            // Создаем метод UpdateRecordTimer в UIManager
+            UIManager.Instance.UpdateRecordTimer(timeRemaining);
+        }
     }
     
-    public void StopRecording()
+    private void StopRecording()
     {
         if (!isRecording) return;
         
         isRecording = false;
-        Debug.Log($"Recording stopped. Frames: {recording.Count}");
         
         // Возвращаем нормальный цвет
-        var spriteRenderer = GetComponent<SpriteRenderer>();
         if (spriteRenderer != null)
         {
             spriteRenderer.color = normalColor;
         }
         
-        // Отправляем запись системе воспроизведения
-        OnRecordingComplete?.Invoke(recording.ToArray());
+        // Прямой вызов UIManager
+        if (UIManager.Instance != null)
+        {
+            UIManager.Instance.StopRecording();
+        }
+        
+        Debug.Log($"Игрок: Запись остановлена. Записано кадров: {recording.Count}");
+        
+        // Создаем призрака (прямой вызов)
+        if (recording.Count > 0)
+        {
+            CreateGhost();
+        }
         
         // Очищаем запись
         recording.Clear();
-        
-        // Обнуляем таймер в UI
-        if (EventManager.Instance != null)
-        {
-            EventManager.Instance.UpdateRecordTimer(0f);
-        }
     }
     
-    private void Update()
+    private void CreateGhost()
     {
-        // Тестовое управление записи
-        if (Input.GetKeyDown(KeyCode.R))
+        // Ищем GhostSpawner в сцене
+        GhostSpawner ghostSpawner = FindObjectOfType<GhostSpawner>();
+        if (ghostSpawner != null)
         {
-            StartRecording();
+            // Преобразуем список в массив
+            RecordFrame[] recordingArray = recording.ToArray();
+            ghostSpawner.SpawnGhost(recordingArray, transform.position);
         }
-        
-        if (Input.GetKeyUp(KeyCode.R))
+        else
         {
-            StopRecording();
-        }
-    }
-    
-    private void OnDestroy()
-    {
-        // Отписываемся от событий
-        if (EventManager.Instance != null)
-        {
-            EventManager.Instance.OnRecordingStarted -= StartRecording;
-            EventManager.Instance.OnRecordingStopped -= StopRecording;
+            Debug.LogWarning("GhostSpawner не найден в сцене!");
         }
     }
 }

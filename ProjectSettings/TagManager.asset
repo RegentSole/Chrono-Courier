@@ -15,7 +15,7 @@ TagManager:
   - Ground
   - Enemy
   - Player
-  - 
+  - Ghost
   - 
   - 
   - 
@@ -41,6 +41,9 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: UI
+    uniqueID: 1937012497
     locked: 0
   m_RenderingLayers:
   - Default

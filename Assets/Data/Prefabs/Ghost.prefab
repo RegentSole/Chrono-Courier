@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 5772638509776059492}
   m_Layer: 9
   m_Name: Ghost
-  m_TagString: Untagged
+  m_TagString: Ghost
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -179,6 +179,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: da514b76d82a14e74aa9f2e12249dc66, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GhostController
-  ghostColor: {r: 1, g: 1, b: 1, a: 0.6}
-  maxGhosts: 1
   replaySpeed: 1
+  destroyAfterSeconds: 5

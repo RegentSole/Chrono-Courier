@@ -11,12 +11,13 @@ public class PlayerController : MonoBehaviour
     
     private Rigidbody2D rb;
     private SpriteRenderer spriteRenderer;
+    private Animator animator;          // Ссылка на аниматор
     private bool isGrounded;
     private float moveInput;
     private bool jumpPressed;
     
     // Свойства для доступа из других скриптов
-    public Vector2 Velocity => rb != null ? rb.linearVelocity : Vector2.zero;
+    public Vector2 Velocity => rb != null ? rb.velocity : Vector2.zero;
     public bool IsGrounded => isGrounded;
     public bool IsJumping { get; private set; }
     public bool IsInteracting { get; private set; }
@@ -25,6 +26,7 @@ public class PlayerController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+        animator = GetComponent<Animator>();   // Получаем компонент аниматора
     }
     
     private void Update()
@@ -35,6 +37,7 @@ public class PlayerController : MonoBehaviour
         if (Input.GetButtonDown("Jump") && isGrounded)
         {
             jumpPressed = true;
+            //isGrounded = false;
         }
         
         // Тест для взаимодействия (кнопка E)
@@ -46,6 +49,13 @@ public class PlayerController : MonoBehaviour
         {
             IsInteracting = false;
         }
+
+        // Передаём параметры в аниматор
+        if (animator != null)
+        {
+            animator.SetFloat("Speed", Mathf.Abs(moveInput));
+            animator.SetBool("IsGrounded", isGrounded);
+        }
     }
     
     private void FixedUpdate()
@@ -56,9 +66,9 @@ public class PlayerController : MonoBehaviour
         // Движение по горизонтали
         if (rb != null)
         {
-            Vector2 velocity = rb.linearVelocity;
+            Vector2 velocity = rb.velocity;
             velocity.x = moveInput * moveSpeed;
-            rb.linearVelocity = velocity;
+            rb.velocity = velocity;
             
             // Прыжок
             if (jumpPressed)
@@ -66,6 +76,7 @@ public class PlayerController : MonoBehaviour
                 rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
                 IsJumping = true;
                 jumpPressed = false;
+                isGrounded = false;
             }
             else if (isGrounded)
             {

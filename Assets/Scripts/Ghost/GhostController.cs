@@ -3,8 +3,8 @@ using UnityEngine;
 public class GhostController : MonoBehaviour
 {
     [Header("Ghost Settings")]
+    [SerializeField] private Color ghostColor = new Color(1f, 1f, 1f, 0.6f);
     [SerializeField] private float replaySpeed = 1f;
-    [SerializeField] private float destroyAfterSeconds = 5f;
     
     private RecordFrame[] recording;
     private int currentFrame = 0;
@@ -13,15 +13,18 @@ public class GhostController : MonoBehaviour
     
     private Rigidbody2D rb;
     private SpriteRenderer spriteRenderer;
+    private Animator animator; // Добавляем аниматор
     
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+        animator = GetComponent<Animator>(); // Получаем компонент аниматора
         
         if (spriteRenderer != null)
         {
-            spriteRenderer.color = new Color(1f, 1f, 1f, 0.6f);
+            spriteRenderer.color = ghostColor;
+            spriteRenderer.sortingOrder = -1;
         }
     }
     
@@ -31,28 +34,25 @@ public class GhostController : MonoBehaviour
         currentFrame = 0;
         replayStartTime = Time.time;
         isReplaying = true;
-        
         gameObject.SetActive(true);
         
-        Debug.Log($"Призрак: Начинаю воспроизведение с {recording.Length} кадрами");
+        Debug.Log($"Призрак: начинаю воспроизведение с {recording.Length} кадрами");
         
-        // Уничтожаем через указанное время
-        if (destroyAfterSeconds > 0)
-        {
-            Destroy(gameObject, destroyAfterSeconds);
-        }
+        // Автоуничтожение через 5 секунд (можно заменить на настраиваемое время)
+        Destroy(gameObject, 5f);
     }
     
     private void FixedUpdate()
     {
         if (!isReplaying || recording == null || currentFrame >= recording.Length)
         {
+            FinishReplay();
             return;
         }
         
         float currentTime = (Time.time - replayStartTime) * replaySpeed;
         
-        // Находим подходящий кадр для текущего времени
+        // Ищем подходящий кадр
         while (currentFrame < recording.Length - 1 && 
                recording[currentFrame + 1].timestamp <= currentTime)
         {
@@ -61,7 +61,6 @@ public class GhostController : MonoBehaviour
         
         ApplyFrame(recording[currentFrame]);
         
-        // Проверяем окончание записи
         if (currentFrame >= recording.Length - 1 && 
             currentTime >= recording[recording.Length - 1].timestamp)
         {
@@ -73,23 +72,38 @@ public class GhostController : MonoBehaviour
     {
         if (rb == null) return;
         
-        // Интерполяция для плавности
-        float t = ((Time.time - replayStartTime) * replaySpeed - frame.timestamp) * 50f;
-        t = Mathf.Clamp01(t);
-        
-        Vector2 targetPosition = Vector2.Lerp(transform.position, frame.position, t);
-        rb.MovePosition(targetPosition);
+        // Позиция (используем MovePosition для плавности)
+        rb.MovePosition(frame.position);
         
         // Поворот спрайта
         if (spriteRenderer != null && frame.velocity.x != 0)
         {
             spriteRenderer.flipX = frame.velocity.x < 0;
         }
+        
+        // Передаём параметры анимации
+        if (animator != null)
+        {
+            // Скорость бега (абсолютное значение)
+            animator.SetFloat("Speed", Mathf.Abs(frame.velocity.x));
+            // На земле или в воздухе
+            animator.SetBool("IsGrounded", frame.isGrounded);
+            // Прыжок (можно использовать как триггер, но мы уже имеем isJumping)
+            animator.SetBool("IsJumping", frame.isJumping);
+        }
     }
     
     private void FinishReplay()
     {
         isReplaying = false;
-        Debug.Log("Призрак: Воспроизведение завершено");
+        gameObject.SetActive(false);
+    }
+    
+    public void ResetGhost()
+    {
+        recording = null;
+        currentFrame = 0;
+        isReplaying = false;
+        gameObject.SetActive(false);
     }
 }

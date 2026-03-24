@@ -19,7 +19,7 @@ TagManager:
   - Ghost
   - Wall
   - Background
-  - 
+  - Interactable
   - 
   - 
   - 
@@ -46,8 +46,14 @@ TagManager:
   - name: Background
     uniqueID: 69109765
     locked: 0
+  - name: Middleground
+    uniqueID: 1720166297
+    locked: 0
   - name: Characters
     uniqueID: 1600513545
+    locked: 0
+  - name: CharactersAdd
+    uniqueID: 3402727569
     locked: 0
   - name: Foreground
     uniqueID: 710568995

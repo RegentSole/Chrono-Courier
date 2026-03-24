@@ -1,4 +1,5 @@
 using UnityEngine;
+using TMPro;
 
 public class TutorialTrigger : MonoBehaviour
 {
@@ -7,7 +8,7 @@ public class TutorialTrigger : MonoBehaviour
     [SerializeField] private float displayTime = 3f;
     [SerializeField] private bool triggerOnce = true;
     [SerializeField] private bool destroyAfterTrigger = true;
-    
+
     [Header("Visual Settings")]
     [SerializeField] private bool showVisual = true;
     [SerializeField] private Color gizmoColor = new Color(1f, 1f, 0f, 0.3f);
@@ -21,22 +22,21 @@ public class TutorialTrigger : MonoBehaviour
         
         hasTriggered = true;
         
-        // Показываем сообщение
+        // Показываем подсказку на экране
         if (UIManager.Instance != null && !string.IsNullOrEmpty(tutorialMessage))
         {
-       //     UIManager.Instance.ShowTutorial(tutorialMessage, displayTime);
-            Debug.Log($"TutorialTrigger: '{tutorialMessage}'");
+            UIManager.Instance.ShowTutorial(tutorialMessage, displayTime);
+        }
+        else if (!string.IsNullOrEmpty(tutorialMessage))
+        {
+            Debug.Log($"Туториал: {tutorialMessage}");
         }
         
         // Уничтожаем или деактивируем триггер
         if (destroyAfterTrigger)
-        {
             Destroy(gameObject);
-        }
         else
-        {
             gameObject.SetActive(false);
-        }
     }
     
     private void OnDrawGizmos()
@@ -45,10 +45,12 @@ public class TutorialTrigger : MonoBehaviour
         
         Gizmos.color = gizmoColor;
         BoxCollider2D collider = GetComponent<BoxCollider2D>();
-        
         if (collider != null)
-        {
             Gizmos.DrawCube(transform.position + (Vector3)collider.offset, collider.size);
-        }
+        
+        #if UNITY_EDITOR
+        if (!string.IsNullOrEmpty(tutorialMessage))
+            UnityEditor.Handles.Label(transform.position + Vector3.up * 0.5f, tutorialMessage);
+        #endif
     }
 }

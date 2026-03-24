@@ -1,0 +1,494 @@
+fileFormatVersion: 2
+guid: bc930b476a5f8486b982fa3ee85743cd
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 7555289133952508003
+    second: Chrono-Courier (1)_0
+  - first:
+      213: -772417690705101811
+    second: Chrono-Courier (1)_1
+  - first:
+      213: -4347529078015459362
+    second: Chrono-Courier (1)_2
+  - first:
+      213: 5190365817211961867
+    second: Chrono-Courier (1)_3
+  - first:
+      213: 1356929674817820743
+    second: Chrono-Courier (1)_4
+  - first:
+      213: -5267318464324582842
+    second: Chrono-Courier (1)_5
+  - first:
+      213: -6535067381151957979
+    second: Chrono-Courier (1)_6
+  - first:
+      213: 1921982819405897732
+    second: Chrono-Courier (1)_7
+  - first:
+      213: -5266020946180346062
+    second: Chrono-Courier (1)_8
+  - first:
+      213: -6509937867165636442
+    second: Chrono-Courier (1)_9
+  - first:
+      213: 6337700418787473695
+    second: Chrono-Courier (1)_10
+  - first:
+      213: -1564599052302389834
+    second: Chrono-Courier (1)_11
+  - first:
+      213: 4544871945072809148
+    second: Chrono-Courier (1)_12
+  - first:
+      213: -5478075219579963278
+    second: Chrono-Courier (1)_13
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Chrono-Courier (1)_0
+      rect:
+        serializedVersion: 2
+        x: 211
+        y: 244
+        width: 77
+        height: 82
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 360ab9c0077c9d860800000000000000
+      internalID: 7555289133952508003
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Chrono-Courier (1)_1
+      rect:
+        serializedVersion: 2
+        x: 38
+        y: 188
+        width: 29
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d0c7b47e332d745f0800000000000000
+      internalID: -772417690705101811
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Chrono-Courier (1)_2
+      rect:
+        serializedVersion: 2
+        x: 69
+        y: 188
+        width: 31
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: edff43676597aa3c0800000000000000
+      internalID: -4347529078015459362
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Chrono-Courier (1)_3
+      rect:
+        serializedVersion: 2
+        x: 102
+        y: 188
+        width: 29
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b02cf350632e70840800000000000000
+      internalID: 5190365817211961867
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Chrono-Courier (1)_4
+      rect:
+        serializedVersion: 2
+        x: 133
+        y: 188
+        width: 30
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 748d3b49958c4d210800000000000000
+      internalID: 1356929674817820743
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Chrono-Courier (1)_5
+      rect:
+        serializedVersion: 2
+        x: 165
+        y: 188
+        width: 31
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 642c31f93c9b6e6b0800000000000000
+      internalID: -5267318464324582842
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Chrono-Courier (1)_6
+      rect:
+        serializedVersion: 2
+        x: 197
+        y: 188
+        width: 41
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 52cf13357d6ce45a0800000000000000
+      internalID: -6535067381151957979
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Chrono-Courier (1)_7
+      rect:
+        serializedVersion: 2
+        x: 243
+        y: 188
+        width: 31
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 400a71fe0314caa10800000000000000
+      internalID: 1921982819405897732
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Chrono-Courier (1)_8
+      rect:
+        serializedVersion: 2
+        x: 275
+        y: 188
+        width: 30
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 23f672b99d55be6b0800000000000000
+      internalID: -5266020946180346062
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Chrono-Courier (1)_9
+      rect:
+        serializedVersion: 2
+        x: 307
+        y: 188
+        width: 30
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6a86abd300e08a5a0800000000000000
+      internalID: -6509937867165636442
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Chrono-Courier (1)_10
+      rect:
+        serializedVersion: 2
+        x: 339
+        y: 188
+        width: 31
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f19fbaac3f804f750800000000000000
+      internalID: 6337700418787473695
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Chrono-Courier (1)_11
+      rect:
+        serializedVersion: 2
+        x: 371
+        y: 188
+        width: 29
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6bd6a97937d694ae0800000000000000
+      internalID: -1564599052302389834
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Chrono-Courier (1)_12
+      rect:
+        serializedVersion: 2
+        x: 400
+        y: 188
+        width: 30
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cb414bb44f0a21f30800000000000000
+      internalID: 4544871945072809148
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Chrono-Courier (1)_13
+      rect:
+        serializedVersion: 2
+        x: 431
+        y: 188
+        width: 30
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 278f014ac97f9f3b0800000000000000
+      internalID: -5478075219579963278
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Chrono-Courier (1)_0: 7555289133952508003
+      Chrono-Courier (1)_1: -772417690705101811
+      Chrono-Courier (1)_10: 6337700418787473695
+      Chrono-Courier (1)_11: -1564599052302389834
+      Chrono-Courier (1)_12: 4544871945072809148
+      Chrono-Courier (1)_13: -5478075219579963278
+      Chrono-Courier (1)_2: -4347529078015459362
+      Chrono-Courier (1)_3: 5190365817211961867
+      Chrono-Courier (1)_4: 1356929674817820743
+      Chrono-Courier (1)_5: -5267318464324582842
+      Chrono-Courier (1)_6: -6535067381151957979
+      Chrono-Courier (1)_7: 1921982819405897732
+      Chrono-Courier (1)_8: -5266020946180346062
+      Chrono-Courier (1)_9: -6509937867165636442
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

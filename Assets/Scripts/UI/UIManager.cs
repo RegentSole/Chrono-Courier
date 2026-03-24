@@ -19,6 +19,11 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Color recordingColor = Color.red;
     [SerializeField] private Color cooldownColor = Color.yellow;
 
+    [Header("Interaction Prompt")]
+    public GameObject interactionPrompt;   // родительский объект (Image + Text)
+    public TMP_Text interactionText;       // текст внутри (например, "E")
+    public RectTransform promptRect;        // RectTransform самого промпта для позиционирования
+
     [Header("Pause Menu")]
     [SerializeField] private GameObject pauseMenu;
     [SerializeField] private UnityButton resumeButton;
@@ -37,6 +42,11 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TMP_Text gameOverText;
     [SerializeField] private UnityButton gameOverRestartButton;
     [SerializeField] private UnityButton gameOverMenuButton;
+
+    [Header("Tutorial UI")]
+    [SerializeField] private GameObject tutorialPanel;   // Панель для подсказок
+    [SerializeField] private TMP_Text tutorialText;      // Текст на панели
+
 
     private bool isRecording = false;
     private float maxRecordDuration = 5f;
@@ -386,5 +396,45 @@ public class UIManager : MonoBehaviour
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
     }
+
+    public void ShowInteractionPrompt(Vector3 worldPosition, string text)
+    {
+        if (interactionPrompt == null) return;
+
+        // Преобразуем мировые координаты в экранные
+        Vector2 screenPos = Camera.main.WorldToScreenPoint(worldPosition);
+        promptRect.position = screenPos;
+
+        interactionText.text = text;
+        interactionPrompt.SetActive(true);
+    }
+
+    public void HideInteractionPrompt()
+    {
+        if (interactionPrompt != null)
+            interactionPrompt.SetActive(false);
+    }
+
+    public void ShowTutorial(string message, float displayTime = 3f)
+{
+    if (tutorialPanel == null || tutorialText == null)
+    {
+        Debug.LogWarning("Tutorial UI не назначен в UIManager");
+        return;
+    }
+
+    tutorialText.text = message;
+    tutorialPanel.SetActive(true);
+
+    // Отменяем предыдущее скрытие, если было
+    CancelInvoke(nameof(HideTutorial));
+    Invoke(nameof(HideTutorial), displayTime);
+}
+
+private void HideTutorial()
+{
+    if (tutorialPanel != null)
+        tutorialPanel.SetActive(false);
+}
     #endregion
 }

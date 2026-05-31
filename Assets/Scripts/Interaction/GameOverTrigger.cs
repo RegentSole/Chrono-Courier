@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class GameOverTrigger : MonoBehaviour
 {
-    [SerializeField] private string gameOverReason = "Вы упали в пропасть!";
+    [SerializeField] private string gameOverReason = "You fell into the abyss!";
     
     private void OnTriggerEnter2D(Collider2D collision)
     {

@@ -45,7 +45,7 @@ public class MenuManager : MonoBehaviour
             TMP_Text buttonText = buttonObj.GetComponentInChildren<TMP_Text>();
             if (buttonText != null)
             {
-                buttonText.text = $"Уровень {levelIndex + 1}";
+                buttonText.text = $"Level {levelIndex + 1}";
             }
             
             // Назначаем обработчик нажатия
@@ -62,6 +62,7 @@ public class MenuManager : MonoBehaviour
     {
         if (mainMenuPanel != null) mainMenuPanel.SetActive(false);
         if (levelSelectPanel != null) levelSelectPanel.SetActive(true);
+        AudioManager.Instance?.PlayUIClick();
     }
     
     // Вызывается по кнопке "Назад" на панели выбора уровня
@@ -69,11 +70,13 @@ public class MenuManager : MonoBehaviour
     {
         if (mainMenuPanel != null) mainMenuPanel.SetActive(true);
         if (levelSelectPanel != null) levelSelectPanel.SetActive(false);
+        AudioManager.Instance?.PlayUIClick();
     }
     
     // Вызывается по кнопке "Выход"
     public void OnQuitButton()
     {
+        AudioManager.Instance?.PlayUIClick();
         Debug.Log("Выход из игры");
         Application.Quit();
         

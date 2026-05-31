@@ -47,6 +47,8 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject tutorialPanel;   // Панель для подсказок
     [SerializeField] private TMP_Text tutorialText;      // Текст на панели
 
+    public enum RecordState { Ready, Recording, ReplayReady, Cooldown }
+
 
     private bool isRecording = false;
     private float maxRecordDuration = 5f;
@@ -286,10 +288,12 @@ public class UIManager : MonoBehaviour
         if (levelCompletePanel != null)
         {
             levelCompletePanel.SetActive(true);
+            if (AudioManager.Instance != null)
+            AudioManager.Instance.PlayLevelComplete();
             
             if (levelCompleteText != null)
             {
-                string message = "Уровень пройден!";
+                string message = "Level Complete!";
                 if (!string.IsNullOrEmpty(levelName))
                 {
                     message += $"\n{levelName}";
@@ -312,22 +316,33 @@ public class UIManager : MonoBehaviour
 
     #region Поражение
     // Метод для отображения панели поражения
-    public void ShowGameOver(string reason = "Вас обнаружили!")
+    public void ShowGameOver(string reason = "")
     {
         if (isGameOver) return;
         
         isGameOver = true;
-        Time.timeScale = 0f; // Останавливаем игру
+        Time.timeScale = 0f;
         
         if (gameOverPanel != null)
         {
             gameOverPanel.SetActive(true);
             
-            if (gameOverText != null)
-            {
-                gameOverText.text = reason;
-            }
+            // Если причина не задана или пустая – используем английский текст по умолчанию
+            if (string.IsNullOrEmpty(reason))
+                reason = "Game Over!";
+            else
+                reason = "Game Over: " + reason; // можно добавить префикс, но лучше просто использовать переданную строку, если она уже английская.
+            
+            // Но если переданная строка русская – заменим на универсальную
+            if (reason.Contains("обнаружил") || reason.Contains("упали"))
+                reason = "Game Over!";
+            
+            gameOverText.text = reason;
         }
+        // ...
+
+
+        AudioManager.Instance?.PlayGameOver();
         
         // Скрываем другие UI элементы
         if (recordingPanel != null) recordingPanel.SetActive(false);
@@ -344,7 +359,9 @@ public class UIManager : MonoBehaviour
     #region Управление сценами
     public void RestartLevel()
     {
-        Time.timeScale = 1f; // Восстанавливаем время
+        AudioManager.Instance?.PlayUIClick();
+        Time.timeScale = 1f;
+        AudioManager.Instance?.ResetToLevelMusic(); // сброс музыки перед перезагрузкой
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
@@ -435,6 +452,45 @@ private void HideTutorial()
 {
     if (tutorialPanel != null)
         tutorialPanel.SetActive(false);
+}
+
+public void SetRecordState(RecordState state)
+{
+    if (recordTimerFill == null || recordTimerText == null)
+    {
+        Debug.LogWarning("recordTimerFill или recordTimerText не назначены");
+        return;
+    }
+
+    switch (state)
+    {
+        case RecordState.Ready:
+            recordTimerFill.color = readyColor;
+            recordTimerText.text = "READY";
+            recordTimerFill.fillAmount = 1f; // полный круг
+            break;
+        case RecordState.Recording:
+            recordTimerFill.color = recordingColor;
+            recordTimerText.text = "REC";
+            // fillAmount будет обновляться в UpdateRecordTimer
+            break;
+        case RecordState.ReplayReady:
+            recordTimerFill.color = cooldownColor;
+            recordTimerText.text = "PLAY";
+            recordTimerFill.fillAmount = 1f;
+            break;
+        case RecordState.Cooldown:
+            recordTimerFill.color = Color.red;
+            recordTimerText.text = "WAIT";
+            recordTimerFill.fillAmount = 1f;
+            break;
+    }
+}
+
+public void UpdateRecordTimerFill(float fillAmount)
+{
+    if (recordTimerFill != null)
+        recordTimerFill.fillAmount = fillAmount;
 }
     #endregion
 }

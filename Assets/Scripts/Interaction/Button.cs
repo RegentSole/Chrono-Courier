@@ -4,27 +4,37 @@ using UnityEngine.Events;
 public class Button : Interactable
 {
     [Header("Button Settings")]
+    [SerializeField] private bool stayPressed = false; // Кнопка остается нажатой навсегда?
+    
+    [Header("Events")]
     [SerializeField] private UnityEvent onButtonPressed;
     [SerializeField] private UnityEvent onButtonReleased;
-    [SerializeField] private bool stayPressed = false; // Остается нажатой
     
-    private bool wasActivated = false;
-    
+    private bool isCurrentlyActivated = false;
+
     protected override void SetActivated(bool activated)
     {
-        if (stayPressed && wasActivated) return; // Если кнопка остается нажатой
-        
+        // Если кнопка уже была нажата И включен режим "залипания" — полностью игнорируем любые изменения
+        if (stayPressed && isCurrentlyActivated) return;
+
+        // Если состояние не изменилось (например, нажали нажатую кнопку) — ничего не делаем
+        if (activated == isCurrentlyActivated) return;
+
         base.SetActivated(activated);
-        
-        if (activated && !wasActivated)
+        isCurrentlyActivated = activated;
+
+        if (isCurrentlyActivated)
         {
+            Debug.Log("Кнопка нажата");
             onButtonPressed?.Invoke();
-            wasActivated = true;
         }
-        else if (!activated && wasActivated)
+        else
         {
+            Debug.Log("Кнопка отпущена");
             onButtonReleased?.Invoke();
-            wasActivated = false;
         }
+
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlayButtonPress();
     }
 }

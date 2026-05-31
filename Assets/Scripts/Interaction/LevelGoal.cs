@@ -3,7 +3,7 @@ using UnityEngine.SceneManagement;
 
 public class LevelGoalTrigger : MonoBehaviour
 {
-    [SerializeField] private string levelName = "Уровень 1";
+    [SerializeField] private string levelName = "Level 1";
     [SerializeField] private string nextLevelName = "Level2";
     
     private void OnTriggerEnter2D(Collider2D collision)

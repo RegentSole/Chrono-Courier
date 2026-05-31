@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 public class GhostController : MonoBehaviour
 {
@@ -6,20 +7,26 @@ public class GhostController : MonoBehaviour
     [SerializeField] private Color ghostColor = new Color(1f, 1f, 1f, 0.6f);
     [SerializeField] private float replaySpeed = 1f;
     
+    [Header("Visual Effects")]
+    [SerializeField] private float fadeInDuration = 0.2f;
+    [SerializeField] private float fadeOutDuration = 0.5f;
+    [SerializeField] private AnimationCurve fadeCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
+    
     private RecordFrame[] recording;
     private int currentFrame = 0;
     private float replayStartTime;
     private bool isReplaying = false;
+    private bool isFadingOut = false;
     
     private Rigidbody2D rb;
     private SpriteRenderer spriteRenderer;
-    private Animator animator; // Добавляем аниматор
+    private Animator animator;
     
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
-        animator = GetComponent<Animator>(); // Получаем компонент аниматора
+        animator = GetComponent<Animator>();
         
         if (spriteRenderer != null)
         {
@@ -28,31 +35,93 @@ public class GhostController : MonoBehaviour
         }
     }
     
-    public void StartReplay(RecordFrame[] recordFrames)
+    public void StartReplay(RecordFrame[] recordFrames, Vector2 startPosition)
     {
         recording = recordFrames;
         currentFrame = 0;
         replayStartTime = Time.time;
         isReplaying = true;
+        transform.position = startPosition;
         gameObject.SetActive(true);
         
-        Debug.Log($"Призрак: начинаю воспроизведение с {recording.Length} кадрами");
+        // Запускаем появление
+        StartCoroutine(FadeIn());
         
-        // Автоуничтожение через 5 секунд (можно заменить на настраиваемое время)
-        Destroy(gameObject, 5f);
+        // Автоматическое исчезновение после окончания записи + небольшой запас
+        float replayDuration = recording.Length > 0 ? recording[recording.Length - 1].timestamp : 0f;
+        float totalTime = replayDuration + fadeOutDuration;
+        StartCoroutine(ScheduleFadeOut(totalTime));
+    }
+    
+    private IEnumerator FadeIn()
+    {
+        if (spriteRenderer == null) yield break;
+        
+        Color startColor = ghostColor;
+        startColor.a = 0f;
+        spriteRenderer.color = startColor;
+        
+        float time = 0f;
+        while (time < fadeInDuration)
+        {
+            float t = fadeCurve.Evaluate(time / fadeInDuration);
+            Color c = spriteRenderer.color;
+            c.a = Mathf.Lerp(0f, ghostColor.a, t);
+            spriteRenderer.color = c;
+            time += Time.deltaTime;
+            yield return null;
+        }
+        
+        Color finalColor = spriteRenderer.color;
+        finalColor.a = ghostColor.a;
+        spriteRenderer.color = finalColor;
+    }
+    
+    private IEnumerator ScheduleFadeOut(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        if (!isFadingOut)
+        {
+            StartCoroutine(FadeOutAndDestroy());
+        }
+    }
+    
+    private IEnumerator FadeOutAndDestroy()
+    {
+        if (isFadingOut) yield break;
+        isFadingOut = true;
+        
+        if (spriteRenderer == null)
+        {
+            Destroy(gameObject);
+            yield break;
+        }
+        
+        float startAlpha = spriteRenderer.color.a;
+        float time = 0f;
+        while (time < fadeOutDuration)
+        {
+            float t = fadeCurve.Evaluate(time / fadeOutDuration);
+            Color c = spriteRenderer.color;
+            c.a = Mathf.Lerp(startAlpha, 0f, t);
+            spriteRenderer.color = c;
+            time += Time.deltaTime;
+            yield return null;
+        }
+        
+        Destroy(gameObject);
     }
     
     private void FixedUpdate()
     {
         if (!isReplaying || recording == null || currentFrame >= recording.Length)
         {
-            FinishReplay();
+            if (!isFadingOut) StartCoroutine(FadeOutAndDestroy());
             return;
         }
         
         float currentTime = (Time.time - replayStartTime) * replaySpeed;
         
-        // Ищем подходящий кадр
         while (currentFrame < recording.Length - 1 && 
                recording[currentFrame + 1].timestamp <= currentTime)
         {
@@ -64,7 +133,7 @@ public class GhostController : MonoBehaviour
         if (currentFrame >= recording.Length - 1 && 
             currentTime >= recording[recording.Length - 1].timestamp)
         {
-            FinishReplay();
+            StartCoroutine(FadeOutAndDestroy());
         }
     }
     
@@ -72,38 +141,24 @@ public class GhostController : MonoBehaviour
     {
         if (rb == null) return;
         
-        // Позиция (используем MovePosition для плавности)
+        // Позиция
         rb.MovePosition(frame.position);
         
-        // Поворот спрайта
+        // Масштаб и поворот (для кувырка)
+        transform.localScale = frame.localScale;
+        transform.localRotation = frame.localRotation;
+        
         if (spriteRenderer != null && frame.velocity.x != 0)
         {
             spriteRenderer.flipX = frame.velocity.x < 0;
         }
         
-        // Передаём параметры анимации
+        // Анимации (если нужно)
         if (animator != null)
         {
-            // Скорость бега (абсолютное значение)
             animator.SetFloat("Speed", Mathf.Abs(frame.velocity.x));
-            // На земле или в воздухе
             animator.SetBool("IsGrounded", frame.isGrounded);
-            // Прыжок (можно использовать как триггер, но мы уже имеем isJumping)
             animator.SetBool("IsJumping", frame.isJumping);
         }
-    }
-    
-    private void FinishReplay()
-    {
-        isReplaying = false;
-        gameObject.SetActive(false);
-    }
-    
-    public void ResetGhost()
-    {
-        recording = null;
-        currentFrame = 0;
-        isReplaying = false;
-        gameObject.SetActive(false);
     }
 }

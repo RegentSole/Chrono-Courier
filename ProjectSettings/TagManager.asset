@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Enemy
   - Ghost
+  - MovableObject
   layers:
   - Default
   - TransparentFX
@@ -20,10 +21,10 @@ TagManager:
   - Wall
   - Background
   - Interactable
-  - 
-  - 
-  - 
-  - 
+  - ClimbableWall
+  - Clone
+  - MovableObject
+  - Door
   - 
   - 
   - 

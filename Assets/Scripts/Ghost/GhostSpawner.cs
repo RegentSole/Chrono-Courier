@@ -39,7 +39,7 @@ public class GhostSpawner : MonoBehaviour
         
         if (ghostController != null)
         {
-            ghostController.StartReplay(recording);
+            ghostController.StartReplay(recording, position);
         }
         else
         {

@@ -1,0 +1,165 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1737711165969418209
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5750840208604244832}
+  - component: {fileID: 2716333693939017986}
+  - component: {fileID: 7018041891028539405}
+  m_Layer: 0
+  m_Name: AudioManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5750840208604244832
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1737711165969418209}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 3.6388, y: -0.97005, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!82 &2716333693939017986
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1737711165969418209}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 0}
+  m_PlayOnAwake: 1
+  m_Volume: 0
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+--- !u!114 &7018041891028539405
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1737711165969418209}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6cafebbc4791347908b42c6cbfb02121, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: GameScripts::AudioManager
+  menuMusic: {fileID: 8300000, guid: b91b624f5bc4548aa8b4411715136e0f, type: 3}
+  levelMusic: {fileID: 8300000, guid: 14057cfbc8b594070b819385f05a989c, type: 3}
+  chaseMusic: {fileID: 8300000, guid: 6e2c94d92c09343c090784f60d4ab9fe, type: 3}
+  musicVolume: 0.2
+  footstepClips:
+  - {fileID: 8300000, guid: 651de5ddcb77140eabd054616a72dbe1, type: 3}
+  - {fileID: 8300000, guid: 651de5ddcb77140eabd054616a72dbe1, type: 3}
+  enemyDetected: {fileID: 8300000, guid: 320bf7a1e872d45459c02c74226a1769, type: 3}
+  enemyLostTarget: {fileID: 8300000, guid: 277dae3de7ebe4ba09e5db2db0151a4b, type: 3}
+  buttonPress: {fileID: 8300000, guid: 024eb7e2127c0411aad6152cc2c6f676, type: 3}
+  pressurePlatePress: {fileID: 8300000, guid: 75c4b70eff6824c989b9872629f64f4c, type: 3}
+  levelComplete: {fileID: 8300000, guid: 07f5e1156f7e24b92aaaeaebf1ce8c5e, type: 3}
+  gameOver: {fileID: 8300000, guid: 113840f1d1a434c8cb359ce70cc97679, type: 3}
+  uiClick: {fileID: 8300000, guid: bb1f52a68e65d4c12803a8ae5859b5ad, type: 3}
+  sfxVolume: 0.4
+  jumpSound: {fileID: 8300000, guid: ec651d0bdbb36475cbf75b3155b9a5ee, type: 3}
+  doubleJumpSound: {fileID: 8300000, guid: a6705d8f5839f40748592ff93ca9298c, type: 3}
+  landSound: {fileID: 8300000, guid: 61c713dd7b3c44115b36d86293db9733, type: 3}
+  recordingStartSound: {fileID: 8300000, guid: 701924d8d0a0845dfbb07d6aad7ed2db, type: 3}
+  recordingStopSound: {fileID: 8300000, guid: 701924d8d0a0845dfbb07d6aad7ed2db, type: 3}
+  ghostReplaySound: {fileID: 8300000, guid: 2e6d3102836114c5994489100abf2962, type: 3}
